@@ -1,0 +1,213 @@
+<!-- kalıtım al baseden -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block site-icerik %}
+
+<!-- güncelleme modalı buradan başlar -->
+{% block tweetModal %}
+  
+{% include "./Components/_updateModal.html" %}
+
+{% endblock tweetModal %}
+
+
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Tweet Oluştur</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          
+        <form class="createForm" action="{% url 'home' %}" method="post">
+
+            {% csrf_token %}
+            {{tweetForm}}
+         
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Oluştur</button>
+        </div>
+
+        </form>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+
+
+<!-- biter -->
+
+
+
+<div class="d-flex align-items-center">
+    
+<h1>Dashboard</h1>
+<button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-success ms-auto">+</button>
+</div>
+
+<hr>
+
+{% for tweet in tweets %}
+
+<!-- yorum yap modal buradan baslar -->
+
+<div class="modal fade" id="comment-form-{{tweet.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">@{{tweet.author.username}}</h1>
+      
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="container mt-3">
+        <span>Tweet:</span>
+        <p> <b>{{tweet.tweet}} </b> </p>
+      </div>
+
+      <div class="modal-body">
+        
+      <!-- enctype: multipart/form-data form üzerinden Video / İmage göndermeye yarar -->
+      <form class="createForm" action="{% url 'create-comment' tweet.id %}" method="post" enctype="multipart/form-data">
+
+          {% csrf_token %}
+          {{commentForm}}
+       
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Yorum Yap</button>
+      </div>
+
+      </form>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+
+
+<div class="d-flex">
+
+  <div>
+    <a href="{% url 'user-profile' tweet.author.id %}">
+      <h3>{{tweet.author.username}}</h3>
+    </a>
+  
+  </div>
+
+  <div class="dropdown ms-auto">
+    <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+    </button>
+    <ul class="dropdown-menu">
+      {% if request.user.is_authenticated %}
+        
+      {% if request.user.id == tweet.author.id or request.user.is_superuser %}
+        
+      <li>
+        
+        <a onclick="get_approval(event, '{{tweet.id}}')" class="dropdown-item" href="{% url 'tweet-delete' tweet.id %}" type="button">Tweeti Sil
+
+        </a>
+    
+      </li>
+      {% endif %}
+
+      {% if request.user.is_superuser %}
+
+        <li><button data-bs-toggle="modal" data-bs-target="#exampleModal-{{tweet.id}}" class="dropdown-item" type="button">Tweeti Güncelle</button></li>
+        <li><button class="dropdown-item" type="button">Tweet Yazarını Banla</button></li>
+
+      {% else %}
+
+      {% if tweet.author.id != request.user.id %}
+         <li><button class="dropdown-item text-danger" type="button">Tweeti Şikayet Et</button></li>
+      {% endif %}
+
+
+      {% endif %}
+     
+
+      {% endif %}
+
+    </ul>
+  </div>
+</div>
+
+
+<p>{{tweet.tweet}}</p>
+
+<!-- image gelecek -->
+<p>
+    
+    <span id="text-{{tweet.id}}" style="cursor: pointer;" onclick="makeRequest('{{tweet.id}}')"> 
+    
+      {% if tweet in liked_tweets %}
+      Beğenme 
+      {% else %}
+      Beğen 
+      {% endif %}
+      
+    </span>
+  
+    (<span id="tweet-{{tweet.id}}">{{tweet.likes.count}}</span>)
+
+    <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#comment-form-{{tweet.id}}">Yorum Yap</button>
+</p>
+
+<p> 
+    <small>{{tweet.createdAt}} tarihinde atıldı. </small>
+</p>
+
+<p>
+    <a href="{% url 'tweet-detail' tweet.id %}">Devamını Oku</a>
+</p>
+  
+{% endfor %}
+
+
+
+
+
+<script src="{% static 'scripts/addClass.js' %}"></script>
+<script src="{% static 'scripts/handleConfirm.js' %}"></script>
+
+
+<script>
+  // api isteği
+  const makeRequest = async (tweetId) => {
+
+      const request = await fetch(`http://127.0.0.1:8000/api/v1/tweets/${tweetId}/like`)
+      const response = await request.json()
+
+      console.log("svden gelen veri:", response)
+
+
+        const spanText = document.getElementById(`text-${tweetId}`)
+        console.log("spantext:", spanText)
+        const span = document.getElementById(`tweet-${tweetId}`)
+
+        if (response.action == "liked") {
+
+          spanText.innerText = "Beğenme"
+        } else {
+
+          spanText.innerText = "Beğen"
+        }
+    
+        span.innerText = response.message
+      
+  }
+
+</script>
+
+{% endblock site-icerik %}

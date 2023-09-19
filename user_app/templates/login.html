@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+
+
+{% block site-icerik %}
+  
+<h3>Giriş Yap</h3>
+<hr>
+
+<form action="{% url 'login' %}" method="post">
+    
+    {% csrf_token %}
+
+    <div class="w-50">
+
+    <div class="mb-3">
+
+        <input name="k_adi" class="form-control" type="text" placeholder="kullanıcı adı">
+    </div>
+
+    <div class="mb-3">
+
+        <input name="k_sifre" class="form-control" type="password" placeholder="şifre">
+    </div>
+
+    <div>
+
+        <p>
+            Hesabın yok mu? Buradan
+            <a href="{% url 'register' %}">kayıt ol</a>
+        </p>
+    </div>
+
+
+    <div class="mb-3">
+
+        <button class="btn btn-success" type="submit">Giriş Yap</button>
+    </div>
+    </div>
+
+</form>
+
+
+
+{% endblock site-icerik %}

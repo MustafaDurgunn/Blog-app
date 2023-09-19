@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+
+
+{% block site-icerik %}
+  
+
+<h3>{{tweet.author.username}}</h3>
+
+<p>{{tweet.tweet}}</p>
+
+<!-- image gelecek -->
+<p> 
+    <small>{{tweet.createdAt}} tarihinde atıldı. 
+        
+        <a href="#">Beğen</a> 
+        (<span>{{tweet.likes.count}}</span>)
+    </small>
+</p>
+
+
+
+<div class="mt-5">
+
+<div class="d-flex">
+<h3>Yorumlar</h3>
+<button onclick="navigateToComment()" class=" ms-auto btn btn-link">Yorum Yap</button>
+</div>
+<hr>
+
+<!-- comments -->
+<div class="row">
+
+<!-- posts tweet modeli comments ile related_name paylasıyor o yüzden tablolar birlestirildi -->
+{% for yorum in tweet.posts.all %}
+
+<div class="mb-3">
+
+<div class="d-flex">
+
+<h3>{{yorum.author.username}}</h3>
+<div class="dropdown ms-auto">
+<button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
+<ul class="dropdown-menu">
+
+{% if request.user.is_authtenticated and request.user.is_superuser or request.user.id == yorum.author.id %}
+  
+<li class="ms-2">
+<a onclick="confirmDeletion(event,'{{yorum.id}}')" type="button">Yorumu Sil</a>
+</li> 
+{% endif %}
+
+
+</ul>
+
+</div>
+</div>
+
+
+<p>{{yorum.message}}</p>
+
+{% if yorum.image %}
+
+<div style="width: 250px;">
+
+    <img class="attachment" src="{{yorum.image.url}}" alt="attachemnt-{{yorum.id}}">
+</div>
+{% endif %}
+
+<small>{{yorum.createdAt}}</small>
+
+</div>
+{% endfor %}
+
+</div>
+
+
+</div>
+
+
+<div id="commentform" style="display: none;">
+<h3>Yorum Yap</h3>
+<hr>
+
+
+<textarea id="comment"></textarea>
+
+</div>
+
+
+
+<script>
+
+
+function navigateToComment() {
+const div = document.getElementById('commentform')
+const textarea = document.getElementById('comment')
+
+if (div.style.display === "none") {
+
+    div.style.display = "block";
+}
+
+// gönder
+textarea.focus()
+
+}
+
+</script>
+
+
+<script>
+function confirmDeletion(event, id) {
+
+    event.preventDefault()
+
+
+    const onayla = window.confirm("Bu yorumu silmek istediğinie emin misini?")
+
+    if (onayla) {
+
+        window.location = `/tweets/${id}/delete/comment`
+    }
+
+}
+</script>
+
+{% endblock site-icerik %}

@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+
+{% block site-icerik %}
+
+
+
+{% block tweetModal %}
+  
+{% include "./Components/_updateModal.html" %}
+
+
+{% if records.banned == True %}
+
+{% include "./Components/_unBanModal.html" %}
+
+{% else %}
+{% include "./Components/_banModal.html" %}
+{% endif %}
+
+
+{% endblock tweetModal %}
+
+
+<div class="d-flex">
+
+  {% if records.banned == True %}
+  <h3 style="text-decoration: line-through; color: red;">{{user.username}}</h3>
+  {% else %}
+  <h3>{{user.username}}</h3>
+  {% endif %}
+  
+
+
+  <div class="ms-auto">
+
+    {% if records.banned == True %}
+    <p class="text-danger">Kayıtlarda {{records.totalBans}} ban</p>
+    {% endif %}
+
+ 
+  </div>
+</div>
+
+
+
+{% for message in messages %}
+  
+{% if message.tags == "error" %}
+<p class="text-danger">{{message}}</p>
+
+{% else %}
+<p class="text-success">{{message}}</p>
+{% endif %}
+
+{% endfor %}
+
+
+{% if request.user.id == user.id or request.user.is_superuser %}
+  
+
+<div class="w-50">
+    <h3>Kişisel Bilgilerini Güncelle</h3>
+    <hr>
+
+    <form class="formContainer" method="post" action="{% url 'user-profile' user.id %}">
+        {% csrf_token %}
+
+   
+        <div class="mb-3">
+         
+            {{userForm}}
+
+        </div>
+
+        <div class="mt-3">
+
+            <button class="btn btn-success" type="submit">Kaydet</button>
+        </div>
+      </form>
+
+</div>
+
+{% endif %}
+
+
+<div class="w-50 mt-5">
+
+{% if user.id == request.user.id %}
+<h3>Tweetleriniz ({{userTweets.count}})</h3>
+
+{% else %}
+  
+<h3>{{user.username}} kullanıcısının tweetleri</h3>
+
+{% endif %}
+
+
+<hr>
+
+<div class="row">
+{% for userTweet in userTweets %}
+  
+<div class="d-flex">
+<p>
+    {{userTweet.tweet}}
+</p>
+
+<div class="dropdown ms-auto">
+    <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+    </button>
+    <ul class="dropdown-menu">
+      {% if request.user.is_authenticated %}
+        
+      {% if request.user.id == userTweet.author.id or request.user.is_superuser %}
+        
+      <li>
+        
+        <a onclick="get_approval(event, '{{userTweet.id}}')" class="dropdown-item" href="{% url 'tweet-delete' userTweet.id %}" type="button">Tweeti Sil        </a>
+    
+      </li>
+
+      <li><button data-bs-toggle="modal" data-bs-target="#exampleModal-{{userTweet.id}}" class="dropdown-item" type="button">Tweeti Güncelle</button></li>
+      {% endif %}
+
+      {% if request.user.is_superuser %}
+
+        {% if records.banned == True %}
+        <li><button data-bs-toggle="modal" data-bs-target="#unbanModal" class="dropdown-item" type="button">Tweet Yazarının Banını Kaldır</button></li>
+
+        {% else %}
+        <li><button data-bs-toggle="modal" data-bs-target="#banModal" class="dropdown-item" type="button">Tweet Yazarını Banla</button></li>
+        {% endif %}
+        
+        
+
+      {% endif %}
+     
+
+      {% endif %}
+
+    </ul>
+  </div>
+
+</div>
+{% endfor %}
+
+</div>
+</div>
+
+<script>
+
+document.querySelectorAll(".formContainer input, textarea, span, br").forEach((elements) => {
+
+    console.log("class adi:", elements.className)
+    if (elements.className === "helptext") elements.remove()
+    if (elements.localName.toLowerCase() === "br") elements.remove()
+
+    elements.style.marginBottom = "1rem"
+    elements.classList.add('form-control')
+})
+</script>
+
+
+
+{% endblock site-icerik %}

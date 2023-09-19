@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+
+
+{% block site-icerik %}
+  
+<h3>Kayıt Ol</h3>
+<hr>
+
+<form action="{% url 'register' %}" method="post">
+
+    {% csrf_token %}
+
+    <div class="w-50">
+
+    <div class="mb-3">
+
+            <input name="k_email" class="form-control" type="email" placeholder="Email">
+    </div>
+
+
+    <div class="mb-3">
+
+        <input name="k_adi" class="form-control" type="text" placeholder="kullanıcı adı">
+    </div>
+
+    <div class="mb-3">
+
+        <input name="k_sifre" class="form-control" type="password" placeholder="şifre">
+    </div>
+
+    <div>
+
+        <p>
+            Zaten hesabın yok mı? Buradan
+            <a href="{% url 'login' %}">giriş yap</a>
+        </p>
+    </div>
+
+
+    <div class="mb-3">
+
+        <button class="btn btn-success" type="submit">Kayıt Ol</button>
+    </div>
+    </div>
+
+
+
+{% endblock site-icerik %}

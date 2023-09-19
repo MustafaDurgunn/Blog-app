@@ -1,0 +1,55 @@
+<nav id="site_nav" class="navbar navbar-expand-lg bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'home' %}">Logo</a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav align-items-center" style="width: 100%;">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+        
+         
+
+
+          {% if request.user.is_authenticated %}
+            
+        
+          <li class="dropdown" style="margin-left: auto;">
+            <button class="btn btn-secondary profileArea dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {{request.user.username}}
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'user-profile' request.user.id %}">Profilim</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+
+              <hr>
+              <li><a class="dropdown-item text-danger logout" href="{% url 'logout' %}">Çıkış Yap</a></li>
+            </ul>
+        </li>
+
+        {% else %}
+
+        <li class="nav-item" style="margin-left: auto;">
+            <a class="nav-link" href="{% url 'login' %}">Giriş Yap</a>
+        
+           
+        </li>
+        veya
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'register' %}">Kayıt Ol</a>
+        </li>
+        {% endif %}
+        </ul>
+   
+
+
+      </div>
+    </div>
+  </nav>

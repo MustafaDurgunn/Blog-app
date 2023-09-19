@@ -1,0 +1,39 @@
+#site_nav {
+    color: white;
+}
+#site_nav * {
+
+    color: inherit;
+}
+
+#site_nav hr {
+
+    color: black !important;
+    margin: 3px;
+}
+
+ul[class="dropdown-menu show"] li a:not(.logout) {
+
+
+    color: black !important;
+
+}
+
+.dropdown-menu[data-bs-popper] {
+
+    left: -73px;
+}
+
+.profileArea {
+
+    background-color: transparent;
+    border: 0;
+}
+
+
+.attachment {
+
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+}
